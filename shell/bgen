@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# from bgen to .hap 
+~/qctool_v2.0-beta6 -g chr20.bgen -og chr20.haps -ofiletype shapeit_haplotypes -threshhold 0.9
+# from .hap to bgen 
+~/qctool_v2.0-beta6 -filetype shapeit_haplotypes -g HRC.r1-1.GRCh37.chr20.shapeit3.mac5.aa.genotypes.hap.gz -og chr20.bgen

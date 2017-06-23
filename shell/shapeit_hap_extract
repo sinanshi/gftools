@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# select a range of individuals from a shapeit .hap.gz reference panel. 
+# example: ./h100.sh -i HRC.r1-1.GRCh37.chr20.shapeit3.mac5.aa.genotypes -o h100 -r 1 10
+
+while [[ $# -gt 1 ]]
+do
+  key="$1"
+
+  case $key in
+    -i|--hap)
+      input="$2"
+      shift
+      ;;
+    -o|--output)
+      output="$2"
+      shift # past argument
+      ;;
+    -r|--range)
+      range1="$2"
+      range2="$3"
+      shift # past argument
+      ;;
+    *)
+      # unknown option
+      echo "sdf"
+      exit 1
+      ;;
+  esac
+  shift # past argument or value
+done
+
+
+if [ -d $output ]; then
+  rm -r $output
+fi
+mkdir $output
+
+
+echo "copying the legend file ..."
+cp ${input}.legend.gz ${output}/${output}.legend.gz
+echo "creating the new sample file ..."
+head -n 1 ${input}.samples > ${output}/${output}.samples
+sed -n -e $(($range1+1)),$(($range2+1))p ${input}.samples >> ${output}/${output}.samples
+echo "extracting haplotype ..."
+zcat ${input}.hap.gz | cut -d ' ' -f "${range1}-${range2}" > ${output}/${output}.hap
