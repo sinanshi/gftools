@@ -15,6 +15,7 @@ enable_testing()
 
 
 
+
 set(GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/output)
 
 # Adding BGEN library
@@ -28,14 +29,18 @@ ExternalProject_Add(
   SOURCE_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
   CONFIGURE_COMMAND ./waf-1.8.13 configure 
   BINARY_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
-  BUILD_COMMAND ./waf-1.8.13
+  BUILD_COMMAND ./waf-1.8.13 #&& cd 3rd_party/zstd-1.1.0/lib && make
   INSTALL_COMMAND ""
   )
 
+
+include_directories(${PROJECT_BINARY_DIR}/3rdparty/bgen/3rd_party/zstd-1.1.0/lib)
 set(BGEN_INCLUDE_DIRS ${PROJECT_BINARY_DIR}/3rdparty/bgen/genfile/include/)
 set(BGEN_LIBRARIES ${PROJECT_BINARY_DIR}/3rdparty/bgen/build/libbgen.a)
+set(ZSTD_LIBRARIES ${PROJECT_BINARY_DIR}/3rdparty/bgen/3rd_party/zstd-1.1.0/lib/libzstd.so)
+link_directories(${PROJECT_BINARY_DIR}/3rdparty/bgen/3rd_party/zstd-1.1.0/lib)
 include_directories(${BGEN_INCLUDE_DIRS})
-
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(app)
