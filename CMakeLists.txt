@@ -17,6 +17,7 @@ enable_testing()
 
 set(GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/output)
 
+# Adding BGEN library
 include(ExternalProject)
 
 ExternalProject_Add(
@@ -25,14 +26,10 @@ ExternalProject_Add(
   HG_TAG "master"
 
   SOURCE_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
-  BUILD_COMMAND ""
+  CONFIGURE_COMMAND ./waf-1.8.13 configure 
+  BINARY_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
+  BUILD_COMMAND ./waf-1.8.13
   INSTALL_COMMAND ""
-  CONFIGURE_COMMAND ""
-  )
-
-ExternalProject_Add_Step(
-  bgen custom_build
-  COMMAND cd 3rdparty/bgen && ./waf-1.8.13 configure && ./waf-1.8.13
   )
 
 set(BGEN_INCLUDE_DIRS ${PROJECT_BINARY_DIR}/3rdparty/bgen/genfile/include/)
