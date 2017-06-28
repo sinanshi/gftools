@@ -23,7 +23,7 @@ do
       ;;
     *)
       # unknown option
-      echo "sdf"
+      echo "Error"
       exit 1
       ;;
   esac
@@ -43,4 +43,4 @@ echo "creating the new sample file ..."
 head -n 1 ${input}.samples > ${output}/${output}.samples
 sed -n -e $(($range1+1)),$(($range2+1))p ${input}.samples >> ${output}/${output}.samples
 echo "extracting haplotype ..."
-zcat ${input}.hap.gz | cut -d ' ' -f "${range1}-${range2}" > ${output}/${output}.hap
+zcat ${input}.hap.gz | cut -d " " -f "$((${range1} * 2 - 1))-$(($range2 * 2))" > ${output}/${output}.hap

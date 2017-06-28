@@ -47,10 +47,28 @@ void hapFile::readLegend() {
 
 void hapFile::read() {
   readSample(); 
-  readLegend(); 
+  readLegend();
+  FileIn sf(path_hap);
+  string buffer; 
+  vector <string> tokens;
+
+  int k = 0; 
+  string p; 
+  
+  while (getline(sf, buffer, '\n')) {
+    if (futils::tokenize(buffer, tokens) != (nSMPL * 2)) 
+        throw(runtime_error("hap file is not aligned"));
+    //    else {
+    //      for (string i : tokens)
+    //        p = i;
+    //      k++; 
+    //      if (k > 1000) break; 
 
 
 
+    //    }
+
+  }
 
 
 }

@@ -9,7 +9,8 @@ class hapFile {
   private:
     string path_hap, path_legend, path_sample;
     unordered_map <string, vector<string>> hap_sample;
-    vector<int> loci; 
+    vector<int> loci;
+    vector <string> data;
     int nSMPL;
     int nSNP;
 
@@ -17,7 +18,7 @@ class hapFile {
     hapFile(string ph, string pl, string ps): 
       path_hap(ph), path_legend(pl), path_sample(ps) {}; 
     string getPath(const string ftype);
-    void readHap();
+    void read();
     void readLegend();
     void readSample();
     int sample_size() {return(nSMPL);}; 

@@ -15,4 +15,5 @@ TEST_CASE("Read hapFile") {
   hf.readLegend(); 
   CHECK(hf.n_snp() == 884983);
 
+  hf.read(); 
 }
