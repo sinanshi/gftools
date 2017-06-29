@@ -15,24 +15,26 @@ enable_testing()
 
 
 
-
 set(GLOBAL_OUTPUT_PATH ${PROJECT_BINARY_DIR}/output)
 
-# Adding BGEN library
-include(ExternalProject)
+if(NOT BGEN_SETUP)
+  #  Adding BGEN library
+  include(ExternalProject)
 
-ExternalProject_Add(
-  bgen
-  HG_REPOSITORY https://bitbucket.org/gavinband/bgen
-  HG_TAG "master"
+  ExternalProject_Add(
+    bgen
+    HG_REPOSITORY https://bitbucket.org/gavinband/bgen
+    HG_TAG "master"
 
-  SOURCE_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
-  CONFIGURE_COMMAND ./waf-1.8.13 configure 
-  BINARY_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
-  BUILD_COMMAND ./waf-1.8.13 #&& cd 3rd_party/zstd-1.1.0/lib && make
-  INSTALL_COMMAND ""
-  )
+    SOURCE_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
+    CONFIGURE_COMMAND ./waf-1.8.13 configure 
+    BINARY_DIR "${PROJECT_BINARY_DIR}/3rdparty/bgen"
+    BUILD_COMMAND ./waf-1.8.13 && cd 3rd_party/zstd-1.1.0/lib && make
+    INSTALL_COMMAND ""
+    )
 
+  set(BGEN_SETUP TRUE CACHE BOOL "bgen setup status")
+endif()
 
 include_directories(${PROJECT_BINARY_DIR}/3rdparty/bgen/3rd_party/zstd-1.1.0/lib)
 set(BGEN_INCLUDE_DIRS ${PROJECT_BINARY_DIR}/3rdparty/bgen/genfile/include/)
