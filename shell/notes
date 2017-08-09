@@ -1,0 +1,2 @@
+# convert from bed to vcf
+plink --bfile chr20 --recode vcf --out chr20.vcf  
