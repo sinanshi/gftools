@@ -127,7 +127,7 @@ vector<bool> hapFile::subset_pmask(const vector<int>& l) {
   }
 
   if (miss > 0) 
-    cout << "[WARNING] " << miss << "positions are removed.";
+    cout << "[WARNING] " << miss << " positions are removed.\n";
 
   for(int i = 0; i < pmask.size(); ++i) pmask[i] = false;
   for(auto i : match_index) pmask[i] = true;
