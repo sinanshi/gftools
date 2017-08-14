@@ -1,5 +1,9 @@
 #include <hapfile.h>
 #include <iofile.h>
+#include <map>
+
+using namespace Eigen;
+
 //! We assume that sample file has a table which contains 4 columns. 
 //! sample, population, group, sex
 void hapFile::readSample() {
@@ -29,46 +33,104 @@ void hapFile::readSample() {
   nSMPL = hap_sample["sample"].size(); 
 }
 
-
-void hapFile::readLegend() {
-  FileIn sf(path_legend);
+//! Read legend file with a give name
+//! \param lfname the full path of the legend file
+//! \return an vector<int> which contains all the positions appeard in the 
+//! legend file. 
+vector<int> hapFile::readLegendFile(string lfname) {
+  FileIn lf(lfname);
   string buffer; 
   vector <string> tokens, header;
-  getline(sf, buffer, '\n'); 
+  vector <int> p;
+  getline(lf, buffer, '\n'); 
 
-  while(getline(sf, buffer, '\n')) {
+  while(getline(lf, buffer, '\n')) {
     futils::tokenize(buffer, tokens); 
     if (tokens.size() != 4) 
       throw(runtime_error("legend file format is not correct!"));
-    loci.push_back(stoi(tokens[1]));
+    p.push_back(stoi(tokens[1]));
   }
-  nSNP = loci.size();
+  return(p);
 }
 
-void hapFile::read() {
-  readSample(); 
-  readLegend();
+//! Load the legend file for the haplotype data object.
+//! #pos_legend is updated.
+//! \return 
+void hapFile::readLegend() {
+  auto l = readLegendFile(path_legend); 
+  pos_legend = l;
+}
+
+void hapFile::read(const vector<int> & select_snp) {
   FileIn sf(path_hap);
-  string buffer; 
   vector <string> tokens;
+  string buffer;
+  readSample();
+  readLegend();
 
-  int k = 0; 
-  string p; 
-  
+  vector<bool> pmask = subset_pmask(select_snp);
+
+  m = Matrix<bool, Dynamic, Dynamic>(select_snp.size(), nSMPL * 2);
+
+  int index_row = 0; // for the eigen Matrix m
+  int iSNP = 0; // ith row in the hap file. 
   while (getline(sf, buffer, '\n')) {
-    if (futils::tokenize(buffer, tokens) != (nSMPL * 2)) 
+    if (pmask[iSNP]) {
+      if (futils::tokenize(buffer, tokens) != (nSMPL * 2))
         throw(runtime_error("hap file is not aligned"));
-    //    else {
-    //      for (string i : tokens)
-    //        p = i;
-    //      k++; 
-    //      if (k > 1000) break; 
+      else {
+        int index_col = 0;
+        for (string t : tokens) {
+          //cout << index_row << ", " << index_col << endl; 
+          m(index_row, index_col) = (stoi(t) == 1);
+          index_col++;
+        }
+      }
+      index_row++;
+    }
+    iSNP++;
+  }
+  pos = select_snp;
+  nSNP = pos.size();
+}
+
+void hapFile::read(const string fname) {
+  auto l = readLegendFile(fname);
+  read(l);
+}
 
 
+void hapFile::read() {
+  auto l = pos_legend; 
+  read(l);
+}
 
-    //    }
+vector<bool> hapFile::subset_pmask(const vector<int>& l) {
+  int miss = 0;
+  vector<int> match_index; 
+  map <int, int> ml;
+  vector<bool> pmask(pos_legend.size()); 
 
+  // create a map to matach the positions. 
+  int index = 0; 
+  for (auto i : pos_legend) {
+    ml.insert(make_pair(i, index));
+    index++; 
   }
 
+  for (auto i : l) {
+    auto it = ml.find(i);
+    if (it != ml.end()) 
+      match_index.push_back(it -> second);
+    else
+      miss++;
+  }
 
+  if (miss > 0) 
+    cout << "[WARNING] " << miss << "positions are removed.";
+
+  for(int i = 0; i < pmask.size(); ++i) pmask[i] = false;
+  for(auto i : match_index) pmask[i] = true;
+
+  return(pmask);
 }
