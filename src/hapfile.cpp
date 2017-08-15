@@ -1,6 +1,7 @@
 #include <hapfile.h>
 #include <iofile.h>
 #include <map>
+#include <numeric>
 
 using namespace Eigen;
 
@@ -65,12 +66,14 @@ void hapFile::read(const vector<int> & select_snp) {
   FileIn sf(path_hap);
   vector <string> tokens;
   string buffer;
+  pos.clear(); 
   readSample();
   readLegend();
 
   vector<bool> pmask = subset_pmask(select_snp);
+  nSNP = accumulate(pmask.begin(), pmask.end(), 0);
 
-  m = Matrix<bool, Dynamic, Dynamic>(select_snp.size(), nSMPL * 2);
+  m = Matrix<int, Dynamic, Dynamic>(nSNP, nSMPL * 2);
 
   int index_row = 0; // for the eigen Matrix m
   int iSNP = 0; // ith row in the hap file. 
@@ -81,12 +84,12 @@ void hapFile::read(const vector<int> & select_snp) {
       else {
         int index_col = 0;
         for (string t : tokens) {
-          //cout << index_row << ", " << index_col << endl; 
-          m(index_row, index_col) = (stoi(t) == 1);
+          m(index_row, index_col) = stoi(t);
           index_col++;
         }
       }
       index_row++;
+      pos.push_back(pos_legend[iSNP]);
     }
     iSNP++;
   }
