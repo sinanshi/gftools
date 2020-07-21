@@ -93,7 +93,7 @@ void hapFile::read(const vector<int> & select_snp) {
     }
     iSNP++;
   }
-  pos = select_snp;
+//  pos = select_snp;
   nSNP = pos.size();
 }
 

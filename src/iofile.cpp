@@ -4,7 +4,7 @@ using namespace std;
 
 FileIn::FileIn(string filename , bool binary) {
   if (!open(filename, binary))
-    throw(runtime_error("[Error]: The input file" + filename + "cannot be found!"));
+    throw(runtime_error("[Error]: The input file " + filename + " cannot be found!"));
 }
 
 FileIn::~FileIn() {
